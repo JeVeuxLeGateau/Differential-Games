@@ -9,6 +9,7 @@ Homicidal_Chauffeur -> Homicidal_Chauffeur.py
 import time
 import Games.Homicidal_Chauffeur as hc
 import numpy as np
+import policies as pol
 
 
 def main():
@@ -24,7 +25,8 @@ def main():
     status = 0
     game = hc.Homicidal_Chauffeur(chauffeur_omega, chauffeur_speed, victim_speed, box_dimensions, dt)
 
-    actions = {"chauffeur": np.array(0),
+
+    actions = {"chauffeur": ,
                "victim": np.array(0)}
 
     while timer <= timesteps and status == 0:

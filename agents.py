@@ -35,6 +35,11 @@ class Point(real_world):
     def get_state(self):
         return np.array([self.x, self.y])
 
+    def get_state_dict(self):
+        return {"x": self.x,
+                "y": self.y,
+                }
+
 
 class Dubin(real_world):
     """
@@ -85,3 +90,9 @@ class Dubin(real_world):
 
     def get_state(self):
         return np.array([self.x, self.y, self.theta])
+
+    def get_state_dict(self):
+        return {"x": self.x,
+                "y": self.y,
+                "theta": self.theta
+                }
