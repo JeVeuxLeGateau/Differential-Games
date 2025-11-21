@@ -9,7 +9,7 @@ class real_world:
 class Point(real_world):
     """
     Simple holonomic point:
-    State: [x, y]
+    State: [x, y, theta]
     Control: u = heading angle (instantaneous turn)
 
     x_dot = v*cos(u)
@@ -20,24 +20,28 @@ class Point(real_world):
         super().__init__(size)
         self.x = np.random.uniform(box_dims[0], box_dims[1])
         self.y = np.random.uniform(box_dims[0], box_dims[1])
+        self.theta = np.random.uniform(-np.pi, np.pi)
         self.v = v
 
     def f(self, u):
         x_dot = self.v * np.cos(u)
         y_dot = self.v * np.sin(u)
+
         return np.array([x_dot, y_dot])
 
     def step(self, state, control, dt):
         dx, dy = self.f(control)
         self.x += dx * dt
         self.y += dy * dt
+        self.theta = control
 
     def get_state(self):
-        return np.array([self.x, self.y])
+        return np.array([self.x, self.y, self.theta])
 
     def get_state_dict(self):
         return {"x": self.x,
                 "y": self.y,
+                "theta": self.theta
                 }
 
 
@@ -60,7 +64,7 @@ class Dubin(real_world):
         super().__init__(size)
         self.x = np.random.uniform(box_dims[0], box_dims[1])
         self.y = np.random.uniform(box_dims[0], box_dims[1])
-        self.theta = np.random.uniform(0, 2 * np.pi)
+        self.theta = np.random.uniform(-np.pi, np.pi)
         self.omega = omega
         self.v = v
 
@@ -74,19 +78,25 @@ class Dubin(real_world):
         return np.array([x_dot, y_dot, theta_dot])
 
     def step(self, state, control, dt):
+        """
+        Assuming the control policy will be in theta not angular velocity
+        """
+        current_theta = self.theta
+        desired_theta = control
+
+        w = (desired_theta - current_theta)/dt
+
         f = self.f
-        k1 = f(state, control) * dt
-        k2 = f(state + 0.5 * k1, control) * dt
-        k3 = f(state + 0.5 * k2, control) * dt
-        k4 = f(state + k3, control) * dt
+        k1 = f(state, w) * dt
+        k2 = f(state + 0.5 * k1, w) * dt
+        k3 = f(state + 0.5 * k2, w) * dt
+        k4 = f(state + k3, w) * dt
 
         new_state = state + (k1 + 2 * k2 + 2 * k3 + k4) / 6.0
 
-        wrapped_theta = new_state[2] % (2 * np.pi)
-
         self.x = new_state[0]
         self.y = new_state[1]
-        self.theta = wrapped_theta
+        self.theta = new_state[2]
 
     def get_state(self):
         return np.array([self.x, self.y, self.theta])

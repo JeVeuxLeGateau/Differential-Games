@@ -8,9 +8,10 @@ import numpy as np
 
 import agents
 import pygame
+from Games.Game import Game
 
 
-class Homicidal_Chauffeur:
+class Homicidal_Chauffeur(Game):
     """
     The HCG is a two player game.
 
@@ -28,8 +29,7 @@ class Homicidal_Chauffeur:
 
     def __init__(self, chauffeur_omega, chauffeur_speed=1, victim_speed=0.1, box_dimensions=[1000, 1000], dt=0.1):
         ##### Game specs #####
-        self.box_dimensions = box_dimensions
-        self.dt = dt
+        super().__init__(box_dimensions, dt)
         self.key_names = ["chauffeur, victim"]
         ###########################################
 
@@ -78,7 +78,6 @@ class Homicidal_Chauffeur:
 
     def check_win(self):
         c_state = self.chauffeur.get_state()
-        c_state = np.array([c_state[0], c_state[1]])
         v_state = self.victim.get_state()
 
         dist = np.linalg.norm(c_state - v_state)
@@ -102,7 +101,6 @@ class Homicidal_Chauffeur:
             else:
                 pygame.draw.circle(self.screen, "black",
                                    (int(state[0]), int(state[1])), int(cur_agent.size))
-
 
         # Update the full display surface to the screen
         pygame.display.flip()

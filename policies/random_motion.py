@@ -5,7 +5,7 @@ Then every T seconds (defined by the user) we pick a different direction and mov
 import numpy as np
 
 
-def zig_zag(T, current_time, cur_theta):
+def random_motion(T, current_time, cur_theta):
     """
     Picks a new direction to move in every T timesteps
     :param T: How often we want to choose a different direction in timesteps
@@ -15,7 +15,9 @@ def zig_zag(T, current_time, cur_theta):
     """
 
     if current_time % T == 0:
-        return np.random.uniform(0, 2 * np.pi)
+        new_vel = np.random.uniform(-np.pi, np.pi)
+        return new_vel
+
     else:
         return cur_theta
     
