@@ -10,3 +10,5 @@ class Game:
         for agent in self.all_agents:
             self.all_agents[agent].x = np.clip(self.all_agents[agent].x, 0, self.box_dimensions[0])
             self.all_agents[agent].y = np.clip(self.all_agents[agent].y, 0, self.box_dimensions[1])
+            if hasattr(self.all_agents[agent], 'z'):
+                self.all_agents[agent].z = np.clip(self.all_agents[agent].z, 0, self.box_dimensions[1])

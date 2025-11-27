@@ -8,6 +8,7 @@ Homicidal_Chauffeur -> Homicidal_Chauffeur.py
 """
 import time
 import Games.Homicidal_Chauffeur as hc
+import Games.Homicidal_Chauffeur_3D as hc3d
 import numpy as np
 # import policies.pure_pursuit as pp
 # import policies.zig_zag as zz
@@ -15,9 +16,10 @@ import policies as p
 
 
 def main():
-    chauffeur_omega = 1
-    chauffeur_speed = 20
-    victim_speed = 10
+    chauffeur_omega_t = 1.0
+    chauffeur_omega_p = 1.0
+    chauffeur_speed = 2.5
+    victim_speed = 1
 
     timer = 1
     time_limit = 10000
@@ -25,7 +27,14 @@ def main():
     timesteps = int(time_limit / dt)
     box_dimensions = [1000, 1000]
     status = 0
-    game = hc.Homicidal_Chauffeur(chauffeur_omega, chauffeur_speed, victim_speed, box_dimensions, dt)
+
+    game = hc3d.Homicidal_Chauffeur_3D(np.array([chauffeur_omega_t, chauffeur_omega_p]),
+                                       chauffeur_speed, victim_speed, box_dimensions, dt)
+    """
+    2D HC
+    game = hc.Homicidal_Chauffeur(chauffeur_omega_t,
+                                       chauffeur_speed, victim_speed, box_dimensions, dt)
+    """
 
     chauffeur = game.chauffeur
     victim = game.victim
@@ -34,8 +43,12 @@ def main():
         c_dict = chauffeur.get_state_dict()
         v_dict = victim.get_state_dict()
 
-        c_cmd = p.pure_pursuit(c_dict, v_dict)
-        v_cmd = p.random_motion(T=200, current_time=timer, cur_theta=victim.theta)
+        # For 2D
+        # c_cmd = p.pure_pursuit(c_dict, v_dict)
+        # v_cmd = p.random_motion(T=1000, current_time=timer, cur_theta=victim.theta)
+
+        c_cmd = p.pure_pursuit_3D(c_dict, v_dict)
+        v_cmd = p.random_motion_3D(T=1000, current_time=timer, cur_angles=np.array([victim.theta, victim.phi]))
 
         actions = {"chauffeur": c_cmd,
                    "victim": v_cmd}
@@ -44,9 +57,13 @@ def main():
         game.enforce_bounds()
 
         status = game.check_win()
-        game.render()
+        # For continuous plotting in 2D
+        # game.render()
+
         time.sleep(0.001)
         timer += 1
+
+    game.render()
 
     if timer == timesteps:
         print("WIN!!!!!!")
